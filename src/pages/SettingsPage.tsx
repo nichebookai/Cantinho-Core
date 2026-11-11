@@ -231,10 +231,10 @@ export const SettingsPage: React.FC = () => {
           <div className="p-3.5 bg-white rounded-xl border border-slate-200 space-y-1.5 shadow-2xs">
             <span className="font-bold text-slate-900 block text-xs flex items-center gap-1.5">
               <span className="w-5 h-5 rounded-full bg-amber-600 text-white flex items-center justify-center text-[10px]">2</span>
-              Publicar com 1 Comando
+              Ativar GitHub Actions (1 Clique)
             </span>
             <p className="text-[11px] text-slate-600 leading-normal">
-              No seu computador, rode <code className="bg-slate-100 px-1 py-0.5 rounded text-slate-800 font-mono">npm run deploy</code>. A página será publicada em <code className="text-amber-800 font-semibold font-mono">https://usuario.github.io/repo/</code>.
+              No GitHub, vá em <strong>Settings &gt; Pages</strong> e selecione <strong>Build and deployment: Source -&gt; GitHub Actions</strong>. O robô irá gerar e publicar seu site automaticamente sem você precisar digitar nada!
             </p>
           </div>
 
