@@ -1,0 +1,6 @@
+{
+  "name": "Gelato & Açaí Manager (Sorveteria Core)",
+  "description": "Sistema de gestão financeira, de estoque e de vendas para sorveterias, gelaterias e casas de açaí com operação offline-first e matemática determinística.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

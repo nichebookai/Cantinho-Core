@@ -1,0 +1,32 @@
+{
+  "id": "./",
+  "name": "Cantinho Gelado (Business Core)",
+  "short_name": "CantinhoGelado",
+  "description": "Sistema de gestão financeira, de estoque e de vendas para sorveteria e açaí com operação 100% offline-first.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F9F8F6",
+  "theme_color": "#C2410C",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
