@@ -26,7 +26,7 @@ export interface RecipeItem {
   stockItemId: string;
   stockItemName: string;
   quantity: number;
-  unit: string;
+  unit: StockUnit;
   unitCost: number;
 }
 

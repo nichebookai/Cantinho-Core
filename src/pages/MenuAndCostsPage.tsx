@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { useBusiness } from '../context/BusinessContext';
 import { Product, ProductCategory, StockUnit } from '../types';
-import { formatCurrency, formatPercentage } from '../utils/deterministicMath';
+import { formatCurrency, formatPercentage, calculateProductEffectiveUnitCost } from '../utils/deterministicMath';
 import { EditProductModal } from '../components/EditProductModal';
 
 export const MenuAndCostsPage: React.FC = () => {
@@ -190,13 +190,15 @@ export const MenuAndCostsPage: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredProducts.map(prod => {
-            const hasCost = prod.directUnitCost !== null && prod.directUnitCost !== undefined;
-            const profit = hasCost ? prod.salePrice - (prod.directUnitCost ?? 0) : null;
+            const effectiveCost = calculateProductEffectiveUnitCost(prod, data.stockItems);
+            const hasCost = effectiveCost !== null && effectiveCost !== undefined;
+            const profit = hasCost ? prod.salePrice - effectiveCost : null;
             const margin =
               hasCost && prod.salePrice > 0
-                ? ((prod.salePrice - (prod.directUnitCost ?? 0)) / prod.salePrice) * 100
+                ? ((prod.salePrice - effectiveCost) / prod.salePrice) * 100
                 : null;
             const prodUnit = prod.unit || (prod.category === 'Sorvetes de Massa' ? 'porção' : 'unidade');
+            const recipeCount = prod.recipeItems ? prod.recipeItems.length : 0;
 
             return (
               <div
@@ -257,7 +259,7 @@ export const MenuAndCostsPage: React.FC = () => {
                       <span className="text-[10px] text-slate-500 block">Custo Unitário (CMV)</span>
                       {hasCost ? (
                         <span className="text-sm font-bold font-mono text-slate-900 mt-0.5 block tabular-nums">
-                          {formatCurrency(prod.directUnitCost)}
+                          {formatCurrency(effectiveCost)}
                         </span>
                       ) : (
                         <span className="text-xs font-bold text-amber-700 mt-0.5 block">
@@ -284,27 +286,47 @@ export const MenuAndCostsPage: React.FC = () => {
                     </div>
                   </div>
 
+                  {/* Detalhamento dos Insumos da Ficha Técnica */}
+                  {prod.recipeItems && prod.recipeItems.length > 0 ? (
+                    <div className="mt-3 bg-amber-50/50 p-2.5 rounded-xl border border-amber-200/60 space-y-1">
+                      <span className="text-[10px] font-bold text-[#C2410C] uppercase tracking-wider block">
+                        Ficha Técnica ({recipeCount} insumos)
+                      </span>
+                      <div className="space-y-0.5 text-[11px] text-slate-700">
+                        {prod.recipeItems.map((ritem, ridx) => {
+                          const stock = data.stockItems.find(s => s.id === ritem.stockItemId);
+                          return (
+                            <div key={ridx} className="flex items-center justify-between font-medium">
+                              <span className="truncate pr-1">• {ritem.quantity} {stock?.unit || ritem.unit} {stock?.name || ritem.stockItemName}</span>
+                              <span className="font-mono text-[10px] text-slate-500 shrink-0">
+                                {formatCurrency(ritem.quantity * (stock?.unitCost ?? ritem.unitCost))}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+                      <div className="flex items-center gap-1.5">
+                        <Layers className="w-3.5 h-3.5 text-slate-400" />
+                        <span>Revenda direta ou item sem receita</span>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Nota sobre embalagem / custo */}
                   {prod.costNote && (
                     <p className="text-[11px] text-slate-400 mt-2 bg-slate-50 p-1.5 rounded-lg border border-slate-100">
                       {prod.costNote}
                     </p>
                   )}
-
-                  {/* Ficha Técnica */}
-                  <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
-                    <div className="flex items-center gap-1.5">
-                      <Layers className="w-3.5 h-3.5 text-slate-400" />
-                      <span>Ficha Técnica ({prod.hasRecipe ? '2 insumos' : '1 insumo'})</span>
-                    </div>
-                    <ChevronDown className="w-3 h-3 text-slate-400" />
-                  </div>
                 </div>
 
                 {/* Rodapé do Card */}
                 <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
                   <span className="text-[11px] text-slate-400">
-                    {prod.hasRecipe ? 'Ficha técnica vinculada' : 'Revenda direta'}
+                    {recipeCount > 0 ? `${recipeCount} insumos vinculados` : 'Sem ficha técnica'}
                   </span>
                   <button
                     onClick={() => {
@@ -313,7 +335,7 @@ export const MenuAndCostsPage: React.FC = () => {
                     }}
                     className="text-xs font-bold text-[#C2410C] hover:underline cursor-pointer"
                   >
-                    Ver Ficha Completa
+                    Editar Ficha Técnica
                   </button>
                 </div>
               </div>

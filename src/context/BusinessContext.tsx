@@ -16,7 +16,7 @@ import {
   SaleChannel
 } from '../types';
 import { DEFAULT_INITIAL_DATA } from '../data/initialData';
-import { calculateDeterministicFinancials, DeterministicFinancialSummary } from '../utils/deterministicMath';
+import { calculateDeterministicFinancials, calculateProductEffectiveUnitCost, DeterministicFinancialSummary } from '../utils/deterministicMath';
 
 const STORAGE_KEY = 'sorveteria_business_data_v2';
 
@@ -344,7 +344,7 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({ children }
 
     const saleItems = itemsInput.map(({ product, quantity }) => {
       const unitPrice = product.salePrice;
-      const unitCost = product.directUnitCost;
+      const unitCost = calculateProductEffectiveUnitCost(product, data.stockItems);
       const totalPrice = unitPrice * quantity;
       const totalCost = unitCost !== null ? unitCost * quantity : null;
 
@@ -386,14 +386,21 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({ children }
     const movementsToAdd: StockMovement[] = [];
     const stockQtyDeductions: Record<string, number> = {};
 
-    saleItems.forEach(item => {
-      if (item.linkedStockItemId) {
-        stockQtyDeductions[item.linkedStockItemId] =
-          (stockQtyDeductions[item.linkedStockItemId] || 0) + item.quantity;
-      }
-      if (item.linkedPackagingStockItemId) {
-        stockQtyDeductions[item.linkedPackagingStockItemId] =
-          (stockQtyDeductions[item.linkedPackagingStockItemId] || 0) + item.quantity;
+    itemsInput.forEach(({ product, quantity }) => {
+      if (product.recipeItems && product.recipeItems.length > 0) {
+        product.recipeItems.forEach(recipeItem => {
+          stockQtyDeductions[recipeItem.stockItemId] =
+            (stockQtyDeductions[recipeItem.stockItemId] || 0) + recipeItem.quantity * quantity;
+        });
+      } else {
+        if (product.linkedStockItemId) {
+          stockQtyDeductions[product.linkedStockItemId] =
+            (stockQtyDeductions[product.linkedStockItemId] || 0) + quantity;
+        }
+        if (product.linkedPackagingStockItemId) {
+          stockQtyDeductions[product.linkedPackagingStockItemId] =
+            (stockQtyDeductions[product.linkedPackagingStockItemId] || 0) + quantity;
+        }
       }
     });
 
@@ -457,13 +464,21 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({ children }
     const stockQtyRestorations: Record<string, number> = {};
 
     sale.items.forEach(item => {
-      if (item.linkedStockItemId) {
-        stockQtyRestorations[item.linkedStockItemId] =
-          (stockQtyRestorations[item.linkedStockItemId] || 0) + item.quantity;
-      }
-      if (item.linkedPackagingStockItemId) {
-        stockQtyRestorations[item.linkedPackagingStockItemId] =
-          (stockQtyRestorations[item.linkedPackagingStockItemId] || 0) + item.quantity;
+      const product = data.products.find(p => p.id === item.productId);
+      if (product && product.recipeItems && product.recipeItems.length > 0) {
+        product.recipeItems.forEach(recipeItem => {
+          stockQtyRestorations[recipeItem.stockItemId] =
+            (stockQtyRestorations[recipeItem.stockItemId] || 0) + recipeItem.quantity * item.quantity;
+        });
+      } else {
+        if (item.linkedStockItemId) {
+          stockQtyRestorations[item.linkedStockItemId] =
+            (stockQtyRestorations[item.linkedStockItemId] || 0) + item.quantity;
+        }
+        if (item.linkedPackagingStockItemId) {
+          stockQtyRestorations[item.linkedPackagingStockItemId] =
+            (stockQtyRestorations[item.linkedPackagingStockItemId] || 0) + item.quantity;
+        }
       }
     });
 

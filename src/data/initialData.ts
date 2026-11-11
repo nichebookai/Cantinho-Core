@@ -1,125 +1,5 @@
 import { BusinessData, Product, StockItem } from '../types';
 
-export const INITIAL_PRODUCTS: Product[] = [
-  {
-    id: 'prod-sorvete-bola',
-    name: 'Bola de Sorvete (Taça/Casquinha)',
-    category: 'Sorvetes de Massa',
-    unit: 'porção',
-    salePrice: 7.00,
-    active: true,
-    hasRecipe: true,
-    directUnitCost: 1.80,
-    costStatus: 'confirmed',
-    linkedStockItemId: 'stock-sorvete-chocolate-10l',
-    linkedPackagingStockItemId: 'stock-casquinha-simples',
-    portionSize: 1,
-    description: '1 bola servida na casquinha artesanal crocante ou copinho'
-  },
-  {
-    id: 'prod-cascao-duplo',
-    name: 'Cascão Recheado com 2 Bolas',
-    category: 'Sorvetes de Massa',
-    unit: 'porção',
-    salePrice: 15.00,
-    active: true,
-    hasRecipe: true,
-    directUnitCost: 4.10,
-    costStatus: 'confirmed',
-    linkedStockItemId: 'stock-sorvete-chocolate-10l',
-    linkedPackagingStockItemId: 'stock-cascao-especial',
-    portionSize: 2,
-    description: 'Cascão com borda trufada de chocolate e 2 bolas à escolha'
-  },
-  {
-    id: 'prod-picole-fruta',
-    name: 'Picolé de Fruta (Variados)',
-    category: 'Picolés',
-    unit: 'unidade',
-    salePrice: 4.00,
-    active: true,
-    hasRecipe: false,
-    directUnitCost: 1.10,
-    costStatus: 'confirmed',
-    linkedStockItemId: 'stock-picole-fruta-cx',
-    portionSize: 1,
-    description: 'Sabores naturais: limão siciliano, maracujá, uva e morango'
-  },
-  {
-    id: 'prod-picole-skimo',
-    name: 'Picolé Trufado / Skimo Especial',
-    category: 'Picolés',
-    unit: 'unidade',
-    salePrice: 7.50,
-    active: true,
-    hasRecipe: false,
-    directUnitCost: 2.40,
-    costStatus: 'confirmed',
-    linkedStockItemId: 'stock-picole-skimo-cx',
-    portionSize: 1,
-    description: 'Cremoso de baunilha com banho crocante de chocolate'
-  },
-  {
-    id: 'prod-acai-300ml',
-    name: 'Copo de Açaí 300ml',
-    category: 'Açaí & Copos',
-    unit: 'ml',
-    salePrice: 14.00,
-    active: true,
-    hasRecipe: true,
-    directUnitCost: 4.20,
-    costStatus: 'confirmed',
-    linkedStockItemId: 'stock-acai-caixa-10l',
-    linkedPackagingStockItemId: 'stock-copo-300ml',
-    portionSize: 1,
-    description: 'Açaí puro batido com 2 acompanhamentos inclusos'
-  },
-  {
-    id: 'prod-acai-500ml',
-    name: 'Copo de Açaí 500ml c/ 3 Toppings',
-    category: 'Açaí & Copos',
-    unit: 'ml',
-    salePrice: 18.00,
-    active: true,
-    hasRecipe: true,
-    directUnitCost: 5.50,
-    costStatus: 'confirmed',
-    linkedStockItemId: 'stock-acai-caixa-10l',
-    linkedPackagingStockItemId: 'stock-copo-500ml',
-    portionSize: 1,
-    description: 'Porção generosa de 500ml com leite em pó, morango e calda'
-  },
-  {
-    id: 'prod-pote-1l-levar',
-    name: 'Pote 1 Litro para Viagem',
-    category: 'Sorvetes de Massa',
-    unit: 'litro',
-    salePrice: 32.00,
-    active: true,
-    hasRecipe: true,
-    directUnitCost: 11.20,
-    costStatus: 'confirmed',
-    linkedStockItemId: 'stock-sorvete-chocolate-10l',
-    linkedPackagingStockItemId: 'stock-pote-viagem-1l',
-    portionSize: 1,
-    description: 'Embalagem térmica selada com até 2 sabores para levar'
-  },
-  {
-    id: 'prod-agua-mineral',
-    name: 'Água Mineral 500ml (s/ gás)',
-    category: 'Outros',
-    unit: 'unidade',
-    salePrice: 4.00,
-    active: true,
-    hasRecipe: false,
-    directUnitCost: 1.20,
-    costStatus: 'confirmed',
-    linkedStockItemId: 'stock-agua-500ml',
-    portionSize: 1,
-    description: 'Garrafa individual de 500ml resfriada'
-  }
-];
-
 export const INITIAL_STOCK_ITEMS: StockItem[] = [
   {
     id: 'stock-sorvete-chocolate-10l',
@@ -149,7 +29,7 @@ export const INITIAL_STOCK_ITEMS: StockItem[] = [
     category: 'Sorvetes de Massa',
     unit: 'balde',
     minStock: 2,
-    currentQuantity: 1, // Estoque baixo para exibir alerta
+    currentQuantity: 1, // Estoque baixo
     isCounted: true,
     unitCost: 115.00,
     costStatus: 'confirmed'
@@ -211,35 +91,57 @@ export const INITIAL_STOCK_ITEMS: StockItem[] = [
   },
   {
     id: 'stock-copo-300ml',
-    name: 'Copos Cristal 300ml (Pacote c/ 100)',
+    name: 'Copos Cristal 300ml (Unidade)',
     category: 'Embalagens & Casquinhas',
-    unit: 'pacote',
-    minStock: 2,
-    currentQuantity: 4,
+    unit: 'unidade',
+    minStock: 50,
+    currentQuantity: 200,
     isCounted: true,
-    unitCost: 24.00,
+    unitCost: 0.25,
     costStatus: 'confirmed'
   },
   {
     id: 'stock-copo-500ml',
-    name: 'Copos Cristal 500ml (Pacote c/ 100)',
+    name: 'Copos Cristal 500ml (Unidade)',
     category: 'Embalagens & Casquinhas',
-    unit: 'pacote',
-    minStock: 2,
-    currentQuantity: 3,
+    unit: 'unidade',
+    minStock: 50,
+    currentQuantity: 150,
     isCounted: true,
-    unitCost: 32.00,
+    unitCost: 0.35,
+    costStatus: 'confirmed'
+  },
+  {
+    id: 'stock-tampa-copo',
+    name: 'Tampas Bolha p/ Copos (Unidade)',
+    category: 'Embalagens & Casquinhas',
+    unit: 'unidade',
+    minStock: 50,
+    currentQuantity: 300,
+    isCounted: true,
+    unitCost: 0.15,
+    costStatus: 'confirmed'
+  },
+  {
+    id: 'stock-colher-descartavel',
+    name: 'Colheres Reforçadas (Unidade)',
+    category: 'Embalagens & Casquinhas',
+    unit: 'unidade',
+    minStock: 50,
+    currentQuantity: 500,
+    isCounted: true,
+    unitCost: 0.08,
     costStatus: 'confirmed'
   },
   {
     id: 'stock-pote-viagem-1l',
-    name: 'Pote Térmico Viagem 1L c/ Tampa (Pct c/ 50)',
+    name: 'Pote Térmico Viagem 1L c/ Tampa (Unidade)',
     category: 'Embalagens & Casquinhas',
-    unit: 'pacote',
-    minStock: 2,
-    currentQuantity: null, // Sem contagem inicial para acionar badge
-    isCounted: false,
-    unitCost: 46.00,
+    unit: 'unidade',
+    minStock: 20,
+    currentQuantity: 80,
+    isCounted: true,
+    unitCost: 1.20,
     costStatus: 'confirmed'
   },
   {
@@ -248,8 +150,8 @@ export const INITIAL_STOCK_ITEMS: StockItem[] = [
     category: 'Coberturas & Toppings',
     unit: 'kg',
     minStock: 2,
-    currentQuantity: null, // Sem contagem inicial
-    isCounted: false,
+    currentQuantity: 3,
+    isCounted: true,
     unitCost: 36.00,
     costStatus: 'confirmed'
   },
@@ -265,30 +167,235 @@ export const INITIAL_STOCK_ITEMS: StockItem[] = [
     costStatus: 'confirmed'
   },
   {
-    id: 'stock-calda-chocolate-artesanal',
-    name: 'Calda Chocolate Artesanal (Frasco 2kg)',
-    category: 'Coberturas & Toppings',
-    unit: 'unidade',
-    minStock: 2,
-    currentQuantity: null, // Sem contagem inicial
-    isCounted: false,
-    unitCost: 38.00,
-    costStatus: 'confirmed'
-  },
-  {
     id: 'stock-agua-500ml',
-    name: 'Fardo Água Mineral 500ml c/ 12un',
+    name: 'Garrafa Água Mineral 500ml',
     category: 'Outros',
-    unit: 'pacote',
-    minStock: 2,
-    currentQuantity: 5,
+    unit: 'unidade',
+    minStock: 24,
+    currentQuantity: 60,
     isCounted: true,
-    unitCost: 14.40,
+    unitCost: 1.20,
     costStatus: 'confirmed'
   }
 ];
 
-// Dados limpos de vendas e finanças (zerados conforme solicitado pelo usuário)
+export const INITIAL_PRODUCTS: Product[] = [
+  {
+    id: 'prod-sorvete-bola',
+    name: 'Bola de Sorvete (Taça/Casquinha)',
+    category: 'Sorvetes de Massa',
+    unit: 'porção',
+    salePrice: 7.00,
+    active: true,
+    hasRecipe: true,
+    directUnitCost: 1.80,
+    costStatus: 'confirmed',
+    portionLabel: '1 bola servida na casquinha ou copinho',
+    recipeItems: [
+      {
+        stockItemId: 'stock-sorvete-chocolate-10l',
+        stockItemName: 'Balde Sorvete Chocolate Belga 10L',
+        quantity: 0.01,
+        unit: 'balde',
+        unitCost: 85.00
+      },
+      {
+        stockItemId: 'stock-casquinha-simples',
+        stockItemName: 'Casquinha de Sorvete (Caixa c/ 300)',
+        quantity: 0.0033,
+        unit: 'caixa',
+        unitCost: 45.00
+      }
+    ]
+  },
+  {
+    id: 'prod-cascao-duplo',
+    name: 'Cascão Recheado com 2 Bolas',
+    category: 'Sorvetes de Massa',
+    unit: 'porção',
+    salePrice: 15.00,
+    active: true,
+    hasRecipe: true,
+    directUnitCost: 4.10,
+    costStatus: 'confirmed',
+    portionLabel: 'Cascão recheado + 2 bolas',
+    recipeItems: [
+      {
+        stockItemId: 'stock-sorvete-chocolate-10l',
+        stockItemName: 'Balde Sorvete Chocolate Belga 10L',
+        quantity: 0.02,
+        unit: 'balde',
+        unitCost: 85.00
+      },
+      {
+        stockItemId: 'stock-cascao-especial',
+        stockItemName: 'Cascão Crocante (Caixa c/ 120)',
+        quantity: 0.0083,
+        unit: 'caixa',
+        unitCost: 52.00
+      }
+    ]
+  },
+  {
+    id: 'prod-picole-fruta',
+    name: 'Picolé de Fruta (Variados)',
+    category: 'Picolés',
+    unit: 'unidade',
+    salePrice: 4.00,
+    active: true,
+    hasRecipe: false,
+    directUnitCost: 1.10,
+    costStatus: 'confirmed',
+    linkedStockItemId: 'stock-picole-fruta-cx',
+    portionLabel: 'Sabores naturais: limão, maracujá, uva e morango'
+  },
+  {
+    id: 'prod-picole-skimo',
+    name: 'Picolé Trufado / Skimo Especial',
+    category: 'Picolés',
+    unit: 'unidade',
+    salePrice: 7.50,
+    active: true,
+    hasRecipe: false,
+    directUnitCost: 2.40,
+    costStatus: 'confirmed',
+    linkedStockItemId: 'stock-picole-skimo-cx',
+    portionLabel: 'Cremoso com casquinha de chocolate'
+  },
+  {
+    id: 'prod-acai-300ml',
+    name: 'Copo de Açaí 300ml',
+    category: 'Açaí & Copos',
+    unit: 'ml',
+    salePrice: 14.00,
+    active: true,
+    hasRecipe: true,
+    directUnitCost: 4.20,
+    costStatus: 'confirmed',
+    portionLabel: 'Copo 300ml + Tampa + Colher + Açaí',
+    recipeItems: [
+      {
+        stockItemId: 'stock-copo-300ml',
+        stockItemName: 'Copos Cristal 300ml (Unidade)',
+        quantity: 1,
+        unit: 'unidade',
+        unitCost: 0.25
+      },
+      {
+        stockItemId: 'stock-tampa-copo',
+        stockItemName: 'Tampas Bolha p/ Copos (Unidade)',
+        quantity: 1,
+        unit: 'unidade',
+        unitCost: 0.15
+      },
+      {
+        stockItemId: 'stock-colher-descartavel',
+        stockItemName: 'Colheres Reforçadas (Unidade)',
+        quantity: 1,
+        unit: 'unidade',
+        unitCost: 0.08
+      },
+      {
+        stockItemId: 'stock-acai-caixa-10l',
+        stockItemName: 'Caixa de Açaí Tradicional 10L',
+        quantity: 0.03,
+        unit: 'caixa',
+        unitCost: 110.00
+      }
+    ]
+  },
+  {
+    id: 'prod-acai-500ml',
+    name: 'Copo de Açaí 500ml c/ Toppings',
+    category: 'Açaí & Copos',
+    unit: 'ml',
+    salePrice: 18.00,
+    active: true,
+    hasRecipe: true,
+    directUnitCost: 5.86,
+    costStatus: 'confirmed',
+    portionLabel: 'Copo 500ml + Tampa + Colher + Açaí + Leite em Pó',
+    recipeItems: [
+      {
+        stockItemId: 'stock-copo-500ml',
+        stockItemName: 'Copos Cristal 500ml (Unidade)',
+        quantity: 1,
+        unit: 'unidade',
+        unitCost: 0.35
+      },
+      {
+        stockItemId: 'stock-tampa-copo',
+        stockItemName: 'Tampas Bolha p/ Copos (Unidade)',
+        quantity: 1,
+        unit: 'unidade',
+        unitCost: 0.15
+      },
+      {
+        stockItemId: 'stock-colher-descartavel',
+        stockItemName: 'Colheres Reforçadas (Unidade)',
+        quantity: 1,
+        unit: 'unidade',
+        unitCost: 0.08
+      },
+      {
+        stockItemId: 'stock-acai-caixa-10l',
+        stockItemName: 'Caixa de Açaí Tradicional 10L',
+        quantity: 0.04,
+        unit: 'caixa',
+        unitCost: 110.00
+      },
+      {
+        stockItemId: 'stock-leite-ninho-topping',
+        stockItemName: 'Leite em Pó Topping (Pacote 1kg)',
+        quantity: 0.02,
+        unit: 'kg',
+        unitCost: 36.00
+      }
+    ]
+  },
+  {
+    id: 'prod-pote-1l-levar',
+    name: 'Pote 1 Litro para Viagem',
+    category: 'Sorvetes de Massa',
+    unit: 'litro',
+    salePrice: 32.00,
+    active: true,
+    hasRecipe: true,
+    directUnitCost: 9.70,
+    costStatus: 'confirmed',
+    portionLabel: 'Pote térmico 1L + Sorvete de Massa',
+    recipeItems: [
+      {
+        stockItemId: 'stock-pote-viagem-1l',
+        stockItemName: 'Pote Térmico Viagem 1L c/ Tampa (Unidade)',
+        quantity: 1,
+        unit: 'unidade',
+        unitCost: 1.20
+      },
+      {
+        stockItemId: 'stock-sorvete-chocolate-10l',
+        stockItemName: 'Balde Sorvete Chocolate Belga 10L',
+        quantity: 0.1,
+        unit: 'balde',
+        unitCost: 85.00
+      }
+    ]
+  },
+  {
+    id: 'prod-agua-mineral',
+    name: 'Água Mineral 500ml',
+    category: 'Outros',
+    unit: 'unidade',
+    salePrice: 4.00,
+    active: true,
+    hasRecipe: false,
+    directUnitCost: 1.20,
+    costStatus: 'confirmed',
+    linkedStockItemId: 'stock-agua-500ml',
+    portionLabel: 'Garrafa 500ml resfriada'
+  }
+];
+
 export const DEFAULT_INITIAL_DATA: BusinessData = {
   version: '1.0.0',
   settings: {

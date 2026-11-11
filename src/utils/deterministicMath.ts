@@ -193,3 +193,29 @@ export function calculateDeterministicFinancials(
     periodNetResult,
   };
 }
+
+export function calculateProductEffectiveUnitCost(
+  product: { recipeItems?: { stockItemId: string; quantity: number; unitCost: number }[]; directUnitCost: number | null },
+  stockItems: { id: string; unitCost: number | null }[]
+): number | null {
+  if (product.recipeItems && product.recipeItems.length > 0) {
+    let totalCost = 0;
+    let hasValidCost = false;
+
+    for (const item of product.recipeItems) {
+      const stock = stockItems.find(s => s.id === item.stockItemId);
+      const cost = stock?.unitCost ?? item.unitCost;
+      if (cost !== null && cost !== undefined && cost >= 0) {
+        totalCost += item.quantity * cost;
+        hasValidCost = true;
+      }
+    }
+
+    if (hasValidCost) {
+      return totalCost;
+    }
+  }
+
+  return product.directUnitCost;
+}
+
