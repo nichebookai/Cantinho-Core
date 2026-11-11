@@ -112,8 +112,10 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
   // Cálculo dinâmico do custo total da receita
   const calculatedRecipeCost = recipeItems.reduce((sum, item) => {
     const stock = data.stockItems.find(s => s.id === item.stockItemId);
-    const cost = stock?.unitCost ?? item.unitCost;
-    return sum + item.quantity * cost;
+    const pkgSize = stock?.itemsPerPackage && stock.itemsPerPackage > 1 ? stock.itemsPerPackage : 1;
+    const baseCost = stock?.unitCost ?? item.unitCost;
+    const individualUnitCost = baseCost / pkgSize;
+    return sum + item.quantity * individualUnitCost;
   }, 0);
 
   const priceNum = parseFloat(salePrice) || 0;
@@ -300,8 +302,11 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
               <div className="space-y-2">
                 {recipeItems.map((item, idx) => {
                   const stock = data.stockItems.find(s => s.id === item.stockItemId);
-                  const currentStockCost = stock?.unitCost ?? item.unitCost;
-                  const lineTotalCost = item.quantity * currentStockCost;
+                  const pkgSize = stock?.itemsPerPackage && stock.itemsPerPackage > 1 ? stock.itemsPerPackage : 1;
+                  const baseCost = stock?.unitCost ?? item.unitCost;
+                  const individualUnitCost = baseCost / pkgSize;
+                  const lineTotalCost = item.quantity * individualUnitCost;
+                  const isPackageItem = pkgSize > 1;
 
                   return (
                     <div
@@ -320,7 +325,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
                         >
                           {data.stockItems.map(st => (
                             <option key={st.id} value={st.id}>
-                              {st.name} ({st.unit})
+                              {st.name} ({st.unit}{st.itemsPerPackage && st.itemsPerPackage > 1 ? ` c/ ${st.itemsPerPackage} ${st.packageUnitName || 'un'}` : ''})
                             </option>
                           ))}
                         </select>
@@ -329,15 +334,15 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
                       {/* Quantidade Consumida */}
                       <div className="sm:col-span-3">
                         <label className="text-[10px] font-bold text-slate-400 uppercase block mb-0.5">
-                          Qtd por Venda ({stock?.unit || item.unit})
+                          Qtd ({isPackageItem ? stock?.packageUnitName || 'unidade' : stock?.unit || item.unit})
                         </label>
                         <input
                           type="number"
-                          step="0.001"
+                          step={isPackageItem ? '1' : '0.001'}
                           min="0.0001"
                           required
                           value={item.quantity}
-                          onChange={e => handleRecipeQtyChange(idx, parseFloat(e.target.value) || 0.001)}
+                          onChange={e => handleRecipeQtyChange(idx, parseFloat(e.target.value) || 1)}
                           className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg font-mono font-bold text-slate-900 text-xs"
                         />
                       </div>
@@ -348,8 +353,8 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
                         <span className="font-mono font-bold text-slate-900 text-xs block">
                           {formatCurrency(lineTotalCost)}
                         </span>
-                        <span className="text-[9px] text-slate-400 font-mono">
-                          ({formatCurrency(currentStockCost)}/{stock?.unit || item.unit})
+                        <span className="text-[9px] text-slate-500 font-mono block leading-tight">
+                          ({formatCurrency(individualUnitCost)}/{isPackageItem ? stock?.packageUnitName || 'un' : stock?.unit || item.unit})
                         </span>
                       </div>
 

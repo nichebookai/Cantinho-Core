@@ -194,9 +194,55 @@ export function calculateDeterministicFinancials(
   };
 }
 
+export function getStockItemIndividualUnitCost(stockItem: { unitCost: number | null; itemsPerPackage?: number }): number | null {
+  if (stockItem.unitCost === null || stockItem.unitCost === undefined) return null;
+  const itemsPerPkg = stockItem.itemsPerPackage && stockItem.itemsPerPackage > 0 ? stockItem.itemsPerPackage : 1;
+  return stockItem.unitCost / itemsPerPkg;
+}
+
+export function formatStockQuantityWithPackage(
+  currentQuantity: number | null,
+  unit: string,
+  itemsPerPackage?: number,
+  packageUnitName?: string
+): { mainText: string; subText?: string } {
+  if (currentQuantity === null || currentQuantity === undefined) {
+    return { mainText: 'Sem contagem' };
+  }
+
+  if (itemsPerPackage && itemsPerPackage > 1) {
+    const totalIndividualUnits = Math.round(currentQuantity * itemsPerPackage);
+    const fullPackages = Math.floor(currentQuantity);
+    const remainderUnits = Math.round((currentQuantity - fullPackages) * itemsPerPackage);
+
+    const subName = packageUnitName || 'unidades';
+
+    if (fullPackages > 0 && remainderUnits > 0) {
+      return {
+        mainText: `${fullPackages} ${unit}s e ${remainderUnits} ${subName}`,
+        subText: `Total: ${totalIndividualUnits} ${subName}`
+      };
+    } else if (fullPackages > 0) {
+      return {
+        mainText: `${fullPackages} ${unit}${fullPackages > 1 ? 's' : ''}`,
+        subText: `${totalIndividualUnits} ${subName} no total`
+      };
+    } else {
+      return {
+        mainText: `${remainderUnits} ${subName}`,
+        subText: `(${currentQuantity.toFixed(2)} ${unit})`
+      };
+    }
+  }
+
+  return {
+    mainText: `${currentQuantity} ${unit}`
+  };
+}
+
 export function calculateProductEffectiveUnitCost(
   product: { recipeItems?: { stockItemId: string; quantity: number; unitCost: number }[]; directUnitCost: number | null },
-  stockItems: { id: string; unitCost: number | null }[]
+  stockItems: { id: string; unitCost: number | null; itemsPerPackage?: number }[]
 ): number | null {
   if (product.recipeItems && product.recipeItems.length > 0) {
     let totalCost = 0;
@@ -204,9 +250,12 @@ export function calculateProductEffectiveUnitCost(
 
     for (const item of product.recipeItems) {
       const stock = stockItems.find(s => s.id === item.stockItemId);
-      const cost = stock?.unitCost ?? item.unitCost;
-      if (cost !== null && cost !== undefined && cost >= 0) {
-        totalCost += item.quantity * cost;
+      const pkgSize = stock?.itemsPerPackage && stock.itemsPerPackage > 0 ? stock.itemsPerPackage : 1;
+      const baseCost = stock?.unitCost ?? item.unitCost;
+
+      if (baseCost !== null && baseCost !== undefined && baseCost >= 0) {
+        const individualCost = baseCost / pkgSize;
+        totalCost += item.quantity * individualCost;
         hasValidCost = true;
       }
     }

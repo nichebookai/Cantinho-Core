@@ -389,8 +389,13 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({ children }
     itemsInput.forEach(({ product, quantity }) => {
       if (product.recipeItems && product.recipeItems.length > 0) {
         product.recipeItems.forEach(recipeItem => {
+          const st = data.stockItems.find(s => s.id === recipeItem.stockItemId);
+          const pkgSize = st?.itemsPerPackage && st.itemsPerPackage > 0 ? st.itemsPerPackage : 1;
+          const totalUnitsConsumed = recipeItem.quantity * quantity;
+          const packageFractionDeduction = totalUnitsConsumed / pkgSize;
+
           stockQtyDeductions[recipeItem.stockItemId] =
-            (stockQtyDeductions[recipeItem.stockItemId] || 0) + recipeItem.quantity * quantity;
+            (stockQtyDeductions[recipeItem.stockItemId] || 0) + packageFractionDeduction;
         });
       } else {
         if (product.linkedStockItemId) {
@@ -467,8 +472,13 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({ children }
       const product = data.products.find(p => p.id === item.productId);
       if (product && product.recipeItems && product.recipeItems.length > 0) {
         product.recipeItems.forEach(recipeItem => {
+          const st = data.stockItems.find(s => s.id === recipeItem.stockItemId);
+          const pkgSize = st?.itemsPerPackage && st.itemsPerPackage > 0 ? st.itemsPerPackage : 1;
+          const totalUnitsConsumed = recipeItem.quantity * item.quantity;
+          const packageFractionRestoration = totalUnitsConsumed / pkgSize;
+
           stockQtyRestorations[recipeItem.stockItemId] =
-            (stockQtyRestorations[recipeItem.stockItemId] || 0) + recipeItem.quantity * item.quantity;
+            (stockQtyRestorations[recipeItem.stockItemId] || 0) + packageFractionRestoration;
         });
       } else {
         if (item.linkedStockItemId) {

@@ -295,11 +295,15 @@ export const MenuAndCostsPage: React.FC = () => {
                       <div className="space-y-0.5 text-[11px] text-slate-700">
                         {prod.recipeItems.map((ritem, ridx) => {
                           const stock = data.stockItems.find(s => s.id === ritem.stockItemId);
+                          const pkgSize = stock?.itemsPerPackage && stock.itemsPerPackage > 1 ? stock.itemsPerPackage : 1;
+                          const baseCost = stock?.unitCost ?? ritem.unitCost;
+                          const individualUnitCost = baseCost / pkgSize;
+                          const displayUnit = pkgSize > 1 ? stock?.packageUnitName || 'un' : stock?.unit || ritem.unit;
                           return (
                             <div key={ridx} className="flex items-center justify-between font-medium">
-                              <span className="truncate pr-1">• {ritem.quantity} {stock?.unit || ritem.unit} {stock?.name || ritem.stockItemName}</span>
+                              <span className="truncate pr-1">• {ritem.quantity} {displayUnit} {stock?.name || ritem.stockItemName}</span>
                               <span className="font-mono text-[10px] text-slate-500 shrink-0">
-                                {formatCurrency(ritem.quantity * (stock?.unitCost ?? ritem.unitCost))}
+                                {formatCurrency(ritem.quantity * individualUnitCost)}
                               </span>
                             </div>
                           );

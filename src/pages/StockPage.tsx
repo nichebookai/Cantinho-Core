@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { useBusiness } from '../context/BusinessContext';
 import { StockCategory, StockItem, StockUnit, StockMovementType } from '../types';
-import { formatCurrency } from '../utils/deterministicMath';
+import { formatCurrency, formatStockQuantityWithPackage } from '../utils/deterministicMath';
 
 export const StockPage: React.FC = () => {
   const {
@@ -50,6 +50,8 @@ export const StockPage: React.FC = () => {
   const [newItemMinStock, setNewItemMinStock] = useState('2');
   const [newItemQty, setNewItemQty] = useState('5');
   const [newItemCost, setNewItemCost] = useState('85.00');
+  const [newItemItemsPerPackage, setNewItemItemsPerPackage] = useState('1');
+  const [newItemPackageUnitName, setNewItemPackageUnitName] = useState('unidades');
 
   // Movimentação avulsa
   const [movementQty, setMovementQty] = useState('');
@@ -130,6 +132,7 @@ export const StockPage: React.FC = () => {
     if (!newItemName.trim()) return;
 
     const unitCost = newItemCost ? parseFloat(newItemCost) || null : null;
+    const itemsPerPkg = parseFloat(newItemItemsPerPackage) || 1;
 
     addStockItem({
       name: newItemName.trim(),
@@ -139,12 +142,16 @@ export const StockPage: React.FC = () => {
       currentQuantity: newItemQty ? parseFloat(newItemQty) || 0 : null,
       isCounted: newItemQty !== '',
       unitCost,
-      costStatus: unitCost !== null ? 'confirmed' : 'incomplete'
+      costStatus: unitCost !== null ? 'confirmed' : 'incomplete',
+      itemsPerPackage: itemsPerPkg > 1 ? itemsPerPkg : undefined,
+      packageUnitName: itemsPerPkg > 1 ? newItemPackageUnitName.trim() : undefined
     });
 
     setIsAddModalOpen(false);
     setNewItemName('');
     setNewItemCost('85.00');
+    setNewItemItemsPerPackage('1');
+    setNewItemPackageUnitName('unidades');
   };
 
   const handleOpenInventory = () => {
@@ -382,6 +389,12 @@ export const StockPage: React.FC = () => {
                     item.currentQuantity !== null &&
                     item.currentQuantity <= item.minStock;
                   const isUncounted = !item.isCounted || item.currentQuantity === null;
+                  const stockDisplay = formatStockQuantityWithPackage(
+                    item.currentQuantity,
+                    item.unit,
+                    item.itemsPerPackage,
+                    item.packageUnitName
+                  );
 
                   return (
                     <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
@@ -400,9 +413,16 @@ export const StockPage: React.FC = () => {
                         {isUncounted ? (
                           <span className="text-amber-700 italic">Não contado</span>
                         ) : (
-                          <span className={isLow ? 'text-rose-600' : 'text-slate-900'}>
-                            {item.currentQuantity} {item.unit}
-                          </span>
+                          <div>
+                            <span className={isLow ? 'text-rose-600' : 'text-slate-900'}>
+                              {stockDisplay.mainText}
+                            </span>
+                            {stockDisplay.subText && (
+                              <span className="text-[10px] text-slate-400 font-normal block font-sans">
+                                {stockDisplay.subText}
+                              </span>
+                            )}
+                          </div>
                         )}
                       </td>
 
@@ -411,9 +431,18 @@ export const StockPage: React.FC = () => {
                       </td>
 
                       <td className="py-3 text-right font-mono text-slate-800 tabular-nums">
-                        {item.unitCost !== null
-                          ? `${formatCurrency(item.unitCost)} / ${item.unit}`
-                          : '(incompleto)'}
+                        {item.unitCost !== null ? (
+                          <div>
+                            <span>{formatCurrency(item.unitCost)} / {item.unit}</span>
+                            {item.itemsPerPackage && item.itemsPerPackage > 1 && (
+                              <span className="text-[10px] text-slate-400 font-normal block font-sans">
+                                ({formatCurrency(item.unitCost / item.itemsPerPackage)} / {item.packageUnitName || 'un'})
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          '(incompleto)'
+                        )}
                       </td>
 
                       <td className="py-3 text-center">
@@ -464,6 +493,12 @@ export const StockPage: React.FC = () => {
                 item.currentQuantity !== null &&
                 item.currentQuantity <= item.minStock;
               const isUncounted = !item.isCounted || item.currentQuantity === null;
+              const stockDisplay = formatStockQuantityWithPackage(
+                item.currentQuantity,
+                item.unit,
+                item.itemsPerPackage,
+                item.packageUnitName
+              );
 
               return (
                 <div
@@ -499,8 +534,13 @@ export const StockPage: React.FC = () => {
                     <div>
                       <span className="text-[10px] font-medium text-slate-400 block">Saldo</span>
                       <span className={`font-mono font-bold text-xs ${isLow ? 'text-rose-600' : isUncounted ? 'text-amber-700 italic' : 'text-slate-900'}`}>
-                        {isUncounted ? 'Pendente' : `${item.currentQuantity} ${item.unit}`}
+                        {isUncounted ? 'Pendente' : stockDisplay.mainText}
                       </span>
+                      {stockDisplay.subText && (
+                        <span className="text-[9px] text-slate-400 font-sans block leading-tight">
+                          {stockDisplay.subText}
+                        </span>
+                      )}
                     </div>
 
                     <div>
@@ -737,6 +777,42 @@ export const StockPage: React.FC = () => {
                     onChange={e => setNewItemCost(e.target.value)}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-mono"
                   />
+                </div>
+              </div>
+
+              {/* Opções de Rendimento da Embalagem / Caixa */}
+              <div className="p-3 bg-amber-50/60 border border-amber-200/80 rounded-xl space-y-2">
+                <span className="font-bold text-slate-900 text-[11px] block">
+                  Conteúdo / Rendimento por Embalagem (Opcional)
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">
+                      Unidades por Caixa/Pacote
+                    </label>
+                    <input
+                      type="number"
+                      step="1"
+                      min="1"
+                      placeholder="Ex: 100 copos por caixa"
+                      value={newItemItemsPerPackage}
+                      onChange={e => setNewItemItemsPerPackage(e.target.value)}
+                      className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg font-mono font-bold text-xs"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">
+                      Nome da Unidade Individual
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ex: copos, tampas, casquinhas"
+                      value={newItemPackageUnitName}
+                      onChange={e => setNewItemPackageUnitName(e.target.value)}
+                      className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
+                    />
+                  </div>
                 </div>
               </div>
 

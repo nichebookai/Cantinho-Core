@@ -60,6 +60,8 @@ export interface StockItem {
   unitCost: number | null;
   costStatus: 'confirmed' | 'incomplete';
   linkedProductId?: string;
+  itemsPerPackage?: number; // ex: 100 copos por caixa, 300 casquinhas por caixa
+  packageUnitName?: string; // ex: 'copos', 'tampas', 'casquinhas', 'bolas'
 }
 
 export type PaymentMethod = 'dinheiro' | 'pix' | 'debito' | 'credito';
