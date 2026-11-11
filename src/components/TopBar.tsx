@@ -123,14 +123,14 @@ export const TopBar: React.FC<TopBarProps> = ({
         </div>
       </div>
 
-      {/* Canto Direito: Botões de Ação do Topo */}
-      <div className="flex items-center gap-2 overflow-x-auto">
+      {/* Canto Direito: Botões de Ação do Topo (Exibidos em telas médias/grandes) */}
+      <div className="hidden md:flex items-center gap-2">
         <button
           onClick={onOpenExpenseModal}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-colors cursor-pointer whitespace-nowrap"
         >
           <FileText className="w-3.5 h-3.5 text-slate-500" />
-          <span className="hidden md:inline">Lançar Despesa</span>
+          <span>Lançar Despesa</span>
         </button>
 
         <button
@@ -138,7 +138,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-colors cursor-pointer whitespace-nowrap"
         >
           <ShoppingCart className="w-3.5 h-3.5 text-slate-500" />
-          <span className="hidden md:inline">Registrar Compra</span>
+          <span>Registrar Compra</span>
         </button>
 
         <button
@@ -146,7 +146,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-colors cursor-pointer whitespace-nowrap"
         >
           <ClipboardCheck className="w-3.5 h-3.5 text-slate-500" />
-          <span className="hidden md:inline">Contagem</span>
+          <span>Contagem</span>
         </button>
 
         <button
@@ -156,11 +156,6 @@ export const TopBar: React.FC<TopBarProps> = ({
           <ArrowLeftRight className="w-3.5 h-3.5" />
           <span>Fechamento Caixa</span>
         </button>
-
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50/80 text-emerald-800 text-xs font-semibold whitespace-nowrap">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span>Auditoria E2E</span>
-        </div>
       </div>
     </header>
   );

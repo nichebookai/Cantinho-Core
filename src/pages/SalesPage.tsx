@@ -470,68 +470,129 @@ export const SalesPage: React.FC = () => {
             Nenhuma venda registrada ainda.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-slate-200/80 text-slate-500">
-                  <th className="pb-3 font-semibold">Horário</th>
-                  <th className="pb-3 font-semibold">Itens Vendidos</th>
-                  <th className="pb-3 font-semibold">Pagamento</th>
-                  <th className="pb-3 font-semibold text-right">Total</th>
-                  <th className="pb-3 font-semibold text-center">Status</th>
-                  <th className="pb-3 font-semibold text-right">Ação</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {recentSales.map(sale => {
-                  const isCancelled = sale.status === 'cancelled';
-                  const time = new Date(sale.timestamp).toLocaleTimeString('pt-BR', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  });
+          <>
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-slate-200/80 text-slate-500">
+                    <th className="pb-3 font-semibold">Horário</th>
+                    <th className="pb-3 font-semibold">Itens Vendidos</th>
+                    <th className="pb-3 font-semibold">Pagamento</th>
+                    <th className="pb-3 font-semibold text-right">Total</th>
+                    <th className="pb-3 font-semibold text-center">Status</th>
+                    <th className="pb-3 font-semibold text-right">Ação</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {recentSales.map(sale => {
+                    const isCancelled = sale.status === 'cancelled';
+                    const time = new Date(sale.timestamp).toLocaleTimeString('pt-BR', {
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    });
 
-                  return (
-                    <tr key={sale.id} className="hover:bg-amber-50/40 transition-colors">
-                      <td className="py-3 font-mono text-slate-500">
-                        {sale.date} {time}
-                      </td>
-                      <td className="py-3 text-slate-800 font-medium">
-                        {sale.items.map(i => `${i.quantity}x ${i.productName}`).join(', ')}
-                      </td>
-                      <td className="py-3 uppercase font-mono text-[11px] text-slate-600">
-                        {sale.paymentMethod}
-                      </td>
-                      <td className="py-3 text-right font-mono font-bold text-slate-900 tabular-nums">
-                        {formatCurrency(sale.total)}
-                      </td>
-                      <td className="py-3 text-center">
-                        {isCancelled ? (
-                          <span className="text-[10px] font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
-                            Estornada
-                          </span>
-                        ) : (
-                          <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                            Concluída
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-3 text-right">
-                        {!isCancelled && (
-                          <button
-                            onClick={() => setSaleToCancel(sale)}
-                            className="inline-flex items-center gap-1 text-[11px] text-rose-600 hover:text-rose-800 font-semibold hover:underline cursor-pointer"
-                          >
-                            <RotateCcw className="w-3 h-3" />
-                            <span>Estornar</span>
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                    return (
+                      <tr key={sale.id} className="hover:bg-amber-50/40 transition-colors">
+                        <td className="py-3 font-mono text-slate-500">
+                          {sale.date} {time}
+                        </td>
+                        <td className="py-3 text-slate-800 font-medium">
+                          {sale.items.map(i => `${i.quantity}x ${i.productName}`).join(', ')}
+                        </td>
+                        <td className="py-3 uppercase font-mono text-[11px] text-slate-600">
+                          {sale.paymentMethod}
+                        </td>
+                        <td className="py-3 text-right font-mono font-bold text-slate-900 tabular-nums">
+                          {formatCurrency(sale.total)}
+                        </td>
+                        <td className="py-3 text-center">
+                          {isCancelled ? (
+                            <span className="text-[10px] font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                              Estornada
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                              Concluída
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-3 text-right">
+                          {!isCancelled && (
+                            <button
+                              onClick={() => setSaleToCancel(sale)}
+                              className="inline-flex items-center gap-1 text-[11px] text-rose-600 hover:text-rose-800 font-semibold hover:underline cursor-pointer"
+                            >
+                              <RotateCcw className="w-3 h-3" />
+                              <span>Estornar</span>
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Stacked Cards for Recent Sales */}
+            <div className="block md:hidden space-y-2.5">
+              {recentSales.map(sale => {
+                const isCancelled = sale.status === 'cancelled';
+                const time = new Date(sale.timestamp).toLocaleTimeString('pt-BR', {
+                  hour: '2-digit',
+                  minute: '2-digit'
+                });
+
+                return (
+                  <div
+                    key={sale.id}
+                    className="bg-slate-50 border border-slate-200/90 rounded-2xl p-3.5 space-y-2 shadow-2xs text-xs"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-slate-900">#{sale.id.slice(-6)}</span>
+                        <span className="text-[10px] font-mono text-slate-400">· {sale.date} {time}</span>
+                      </div>
+
+                      {isCancelled ? (
+                        <span className="text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-lg border border-rose-200">
+                          Estornada
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200">
+                          Concluída
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-slate-800 font-medium bg-white p-2.5 rounded-xl border border-slate-200/80 text-[11px]">
+                      {sale.items.map(i => `${i.quantity}x ${i.productName}`).join(', ')}
+                    </p>
+
+                    <div className="flex items-center justify-between pt-1">
+                      <div>
+                        <span className="text-[10px] font-mono uppercase text-slate-400 block">{sale.paymentMethod}</span>
+                        <span className="text-sm font-extrabold font-mono text-slate-900 tabular-nums">
+                          {formatCurrency(sale.total)}
+                        </span>
+                      </div>
+
+                      {!isCancelled && (
+                        <button
+                          onClick={() => setSaleToCancel(sale)}
+                          className="px-3 py-1.5 min-h-[36px] bg-white border border-rose-200 text-rose-700 hover:bg-rose-50 rounded-xl text-xs font-bold flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5 text-rose-600" />
+                          <span>Estornar</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         )}
       </div>
 

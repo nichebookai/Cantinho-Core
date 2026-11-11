@@ -229,32 +229,58 @@ export const ReportsPage: React.FC = () => {
               Nenhuma perda de estoque registrada. Registre no botão &quot;Movimentação Avulsa&quot; na tela de Estoque.
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-slate-200 text-slate-500">
-                    <th className="pb-2.5 font-semibold">Data</th>
-                    <th className="pb-2.5 font-semibold">Insumo</th>
-                    <th className="pb-2.5 font-semibold text-right">Qtd. Descartada</th>
-                    <th className="pb-2.5 font-semibold">Justificativa</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {lossesMovements.map(m => (
-                    <tr key={m.id}>
-                      <td className="py-2.5 font-mono text-slate-500">
-                        {new Date(m.timestamp).toLocaleDateString('pt-BR')}
-                      </td>
-                      <td className="py-2.5 font-semibold text-slate-900">{m.stockItemName}</td>
-                      <td className="py-2.5 text-right font-mono font-bold text-rose-600">
-                        {m.quantityChange}
-                      </td>
-                      <td className="py-2.5 text-slate-600">{m.reason}</td>
+            <>
+              {/* Desktop Table */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-200 text-slate-500">
+                      <th className="pb-2.5 font-semibold">Data</th>
+                      <th className="pb-2.5 font-semibold">Insumo</th>
+                      <th className="pb-2.5 font-semibold text-right">Qtd. Descartada</th>
+                      <th className="pb-2.5 font-semibold">Justificativa</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {lossesMovements.map(m => (
+                      <tr key={m.id}>
+                        <td className="py-2.5 font-mono text-slate-500">
+                          {new Date(m.timestamp).toLocaleDateString('pt-BR')}
+                        </td>
+                        <td className="py-2.5 font-semibold text-slate-900">{m.stockItemName}</td>
+                        <td className="py-2.5 text-right font-mono font-bold text-rose-600">
+                          {m.quantityChange}
+                        </td>
+                        <td className="py-2.5 text-slate-600">{m.reason}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Stacked Cards */}
+              <div className="block md:hidden space-y-2.5">
+                {lossesMovements.map(m => (
+                  <div
+                    key={m.id}
+                    className="bg-slate-50 border border-slate-200/90 rounded-2xl p-3 space-y-1.5 shadow-2xs text-xs"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-900">{m.stockItemName}</span>
+                      <span className="font-mono font-bold text-rose-600">
+                        Qtd: {m.quantityChange}
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono text-slate-400 block">
+                      Data: {new Date(m.timestamp).toLocaleDateString('pt-BR')}
+                    </span>
+                    <p className="text-[11px] text-slate-600 bg-white p-2 rounded-xl border border-slate-200/60 mt-1">
+                      {m.reason}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       )}

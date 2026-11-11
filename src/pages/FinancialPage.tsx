@@ -254,87 +254,160 @@ export const FinancialPage: React.FC<FinancialPageProps> = ({ onOpenCashClosure 
             Nenhum lançamento financeiro encontrado com os filtros selecionados.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs min-w-[700px]">
-              <thead>
-                <tr className="border-b border-slate-200 text-slate-500">
-                  <th className="pb-3 font-semibold">Data</th>
-                  <th className="pb-3 font-semibold">Descrição</th>
-                  <th className="pb-3 font-semibold">Categoria</th>
-                  <th className="pb-3 font-semibold">Pagamento</th>
-                  <th className="pb-3 font-semibold text-center">Status</th>
-                  <th className="pb-3 font-semibold text-right">Valor (R$)</th>
-                  <th className="pb-3 font-semibold text-right">Ações</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredEntries.map(entry => {
-                  const isReceita = entry.type === 'receita';
-                  const isAjuste = entry.type === 'ajuste_caixa';
-                  const isPositive = isReceita || (isAjuste && entry.amount >= 0);
+          <>
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs min-w-[700px]">
+                <thead>
+                  <tr className="border-b border-slate-200 text-slate-500">
+                    <th className="pb-3 font-semibold">Data</th>
+                    <th className="pb-3 font-semibold">Descrição</th>
+                    <th className="pb-3 font-semibold">Categoria</th>
+                    <th className="pb-3 font-semibold">Pagamento</th>
+                    <th className="pb-3 font-semibold text-center">Status</th>
+                    <th className="pb-3 font-semibold text-right">Valor (R$)</th>
+                    <th className="pb-3 font-semibold text-right">Ações</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredEntries.map(entry => {
+                    const isReceita = entry.type === 'receita';
+                    const isAjuste = entry.type === 'ajuste_caixa';
+                    const isPositive = isReceita || (isAjuste && entry.amount >= 0);
 
-                  return (
-                    <tr key={entry.id} className="hover:bg-amber-50/30 transition-colors">
-                      <td className="py-3 font-mono text-slate-500 whitespace-nowrap">
-                        {entry.date}
-                      </td>
-                      <td className="py-3 font-medium text-slate-900">
-                        {entry.description}
-                      </td>
-                      <td className="py-3 text-slate-600">
-                        {entry.category}
-                      </td>
-                      <td className="py-3 font-mono text-[11px] uppercase text-slate-500">
-                        {entry.paymentMethod || '-'}
-                      </td>
-                      <td className="py-3 text-center">
-                        {entry.status === 'pago' ? (
-                          <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                            Pago
-                          </span>
-                        ) : (
-                          <button
-                            onClick={() => updateFinancialEntryStatus(entry.id, 'pago')}
-                            className="text-[10px] font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 px-2 py-0.5 rounded-md border border-amber-300 transition-colors cursor-pointer"
-                            title="Clique para marcar como pago"
-                          >
-                            Pendente (Quitar)
-                          </button>
-                        )}
-                      </td>
-                      <td
-                        className={`py-3 text-right font-mono font-bold tabular-nums whitespace-nowrap ${
-                          isPositive ? 'text-emerald-700' : 'text-rose-700'
-                        }`}
-                      >
-                        {isPositive
-                          ? `+${formatCurrency(entry.amount)}`
-                          : `-${formatCurrency(Math.abs(entry.amount))}`}
-                      </td>
-                      <td className="py-3 text-right whitespace-nowrap">
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={() => setEditingEntry(entry)}
-                            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
-                            title="Editar lançamento"
-                          >
-                            <Edit2 className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => setEntryToDelete(entry)}
-                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                            title="Excluir lançamento"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                    return (
+                      <tr key={entry.id} className="hover:bg-amber-50/30 transition-colors">
+                        <td className="py-3 font-mono text-slate-500 whitespace-nowrap">
+                          {entry.date}
+                        </td>
+                        <td className="py-3 font-medium text-slate-900">
+                          {entry.description}
+                        </td>
+                        <td className="py-3 text-slate-600">
+                          {entry.category}
+                        </td>
+                        <td className="py-3 font-mono text-[11px] uppercase text-slate-500">
+                          {entry.paymentMethod || '-'}
+                        </td>
+                        <td className="py-3 text-center">
+                          {entry.status === 'pago' ? (
+                            <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                              Pago
+                            </span>
+                          ) : (
+                            <button
+                              onClick={() => updateFinancialEntryStatus(entry.id, 'pago')}
+                              className="text-[10px] font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 px-2 py-0.5 rounded-md border border-amber-300 transition-colors cursor-pointer"
+                              title="Clique para marcar como pago"
+                            >
+                              Pendente (Quitar)
+                            </button>
+                          )}
+                        </td>
+                        <td
+                          className={`py-3 text-right font-mono font-bold tabular-nums whitespace-nowrap ${
+                            isPositive ? 'text-emerald-700' : 'text-rose-700'
+                          }`}
+                        >
+                          {isPositive
+                            ? `+${formatCurrency(entry.amount)}`
+                            : `-${formatCurrency(Math.abs(entry.amount))}`}
+                        </td>
+                        <td className="py-3 text-right whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              onClick={() => setEditingEntry(entry)}
+                              className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                              title="Editar lançamento"
+                            >
+                              <Edit2 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => setEntryToDelete(entry)}
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                              title="Excluir lançamento"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Stacked Cards for Financial Entries */}
+            <div className="block md:hidden space-y-3">
+              {filteredEntries.map(entry => {
+                const isReceita = entry.type === 'receita';
+                const isAjuste = entry.type === 'ajuste_caixa';
+                const isPositive = isReceita || (isAjuste && entry.amount >= 0);
+
+                return (
+                  <div
+                    key={entry.id}
+                    className="bg-slate-50 border border-slate-200/90 rounded-2xl p-3.5 space-y-2.5 shadow-2xs text-xs"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <span className="font-mono text-[10px] text-slate-400 block">{entry.date}</span>
+                        <h4 className="font-bold text-slate-900 leading-snug mt-0.5">{entry.description}</h4>
+                        <span className="text-[11px] font-medium text-slate-500 block">{entry.category}</span>
+                      </div>
+
+                      {entry.status === 'pago' ? (
+                        <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200 whitespace-nowrap">
+                          Pago
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => updateFinancialEntryStatus(entry.id, 'pago')}
+                          className="text-[10px] font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded-lg border border-amber-300 whitespace-nowrap cursor-pointer"
+                        >
+                          Pendente (Quitar)
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1 border-t border-slate-200/60">
+                      <div>
+                        <span className="text-[10px] text-slate-400 block font-mono uppercase">
+                          {entry.paymentMethod || 'Outro'}
+                        </span>
+                        <span
+                          className={`font-mono text-base font-extrabold tabular-nums ${
+                            isPositive ? 'text-emerald-700' : 'text-rose-700'
+                          }`}
+                        >
+                          {isPositive
+                            ? `+${formatCurrency(entry.amount)}`
+                            : `-${formatCurrency(Math.abs(entry.amount))}`}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => setEditingEntry(entry)}
+                          className="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-xl font-bold shadow-2xs transition-colors cursor-pointer"
+                        >
+                          Editar
+                        </button>
+                        <button
+                          onClick={() => setEntryToDelete(entry)}
+                          className="p-1.5 text-slate-400 hover:text-rose-600 bg-white hover:bg-rose-50 border border-slate-200 rounded-xl transition-colors cursor-pointer"
+                          title="Excluir"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         )}
       </div>
 
@@ -352,50 +425,105 @@ export const FinancialPage: React.FC<FinancialPageProps> = ({ onOpenCashClosure 
             Nenhum fechamento diário realizado ainda. Utilize o botão &quot;Fechamento de Caixa&quot; para auditar a gaveta.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs min-w-[650px]">
-              <thead>
-                <tr className="border-b border-slate-200 text-slate-500">
-                  <th className="pb-2.5 font-semibold">Data/Hora</th>
-                  <th className="pb-2.5 font-semibold text-right">Saldo Teórico</th>
-                  <th className="pb-2.5 font-semibold text-right">Valor Contado</th>
-                  <th className="pb-2.5 font-semibold text-right">Diferença (Sobra/Falta)</th>
-                  <th className="pb-2.5 font-semibold">Observações</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {data.cashClosures.map(closure => {
-                  const isExact = Math.abs(closure.difference) < 0.01;
-                  const isSobra = closure.difference > 0;
-                  const time = new Date(closure.closedAt).toLocaleString('pt-BR');
+          <>
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs min-w-[650px]">
+                <thead>
+                  <tr className="border-b border-slate-200 text-slate-500">
+                    <th className="pb-2.5 font-semibold">Data/Hora</th>
+                    <th className="pb-2.5 font-semibold text-right">Saldo Teórico</th>
+                    <th className="pb-2.5 font-semibold text-right">Valor Contado</th>
+                    <th className="pb-2.5 font-semibold text-right">Diferença (Sobra/Falta)</th>
+                    <th className="pb-2.5 font-semibold">Observações</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {data.cashClosures.map(closure => {
+                    const isExact = Math.abs(closure.difference) < 0.01;
+                    const isSobra = closure.difference > 0;
+                    const time = new Date(closure.closedAt).toLocaleString('pt-BR');
 
-                  return (
-                    <tr key={closure.id} className="hover:bg-slate-50/50">
-                      <td className="py-2.5 font-mono text-slate-500">{time}</td>
-                      <td className="py-2.5 text-right font-mono font-medium text-slate-700 tabular-nums">
-                        {formatCurrency(closure.theoreticalCash)}
-                      </td>
-                      <td className="py-2.5 text-right font-mono font-bold text-slate-900 tabular-nums">
-                        {formatCurrency(closure.countedCash)}
-                      </td>
-                      <td
-                        className={`py-2.5 text-right font-mono font-bold tabular-nums ${
-                          isExact ? 'text-emerald-600' : isSobra ? 'text-sky-700' : 'text-rose-600'
+                    return (
+                      <tr key={closure.id} className="hover:bg-slate-50/50">
+                        <td className="py-2.5 font-mono text-slate-500">{time}</td>
+                        <td className="py-2.5 text-right font-mono font-medium text-slate-700 tabular-nums">
+                          {formatCurrency(closure.theoreticalCash)}
+                        </td>
+                        <td className="py-2.5 text-right font-mono font-bold text-slate-900 tabular-nums">
+                          {formatCurrency(closure.countedCash)}
+                        </td>
+                        <td
+                          className={`py-2.5 text-right font-mono font-bold tabular-nums ${
+                            isExact ? 'text-emerald-600' : isSobra ? 'text-sky-700' : 'text-rose-600'
+                          }`}
+                        >
+                          {isExact
+                            ? 'R$ 0,00 (Exato)'
+                            : isSobra
+                            ? `+${formatCurrency(closure.difference)} (Sobra)`
+                            : `${formatCurrency(closure.difference)} (Falta)`}
+                        </td>
+                        <td className="py-2.5 text-slate-600">{closure.notes || '-'}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Stacked Cards for Cash Closures */}
+            <div className="block md:hidden space-y-2.5">
+              {data.cashClosures.map(closure => {
+                const isExact = Math.abs(closure.difference) < 0.01;
+                const isSobra = closure.difference > 0;
+                const time = new Date(closure.closedAt).toLocaleString('pt-BR');
+
+                return (
+                  <div
+                    key={closure.id}
+                    className="bg-slate-50 border border-slate-200/90 rounded-2xl p-3 space-y-2 shadow-2xs text-xs"
+                  >
+                    <div className="flex items-center justify-between border-b border-slate-200/60 pb-1.5">
+                      <span className="font-mono text-slate-500 font-semibold">{time}</span>
+                      <span
+                        className={`font-mono font-bold px-2 py-0.5 rounded-md ${
+                          isExact
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                            : isSobra
+                            ? 'bg-sky-50 text-sky-700 border border-sky-200'
+                            : 'bg-rose-50 text-rose-700 border border-rose-200'
                         }`}
                       >
                         {isExact
-                          ? 'R$ 0,00 (Exato)'
+                          ? 'Exato (0,00)'
                           : isSobra
                           ? `+${formatCurrency(closure.difference)} (Sobra)`
                           : `${formatCurrency(closure.difference)} (Falta)`}
-                      </td>
-                      <td className="py-2.5 text-slate-600">{closure.notes || '-'}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-slate-700 pt-0.5">
+                      <div>
+                        <span className="text-[10px] text-slate-400 block font-medium">Teórico</span>
+                        <span className="font-mono font-semibold">{formatCurrency(closure.theoreticalCash)}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-slate-400 block font-medium">Contado na Gaveta</span>
+                        <span className="font-mono font-bold text-slate-900">{formatCurrency(closure.countedCash)}</span>
+                      </div>
+                    </div>
+
+                    {closure.notes && (
+                      <p className="text-[11px] text-slate-600 italic bg-white p-2 rounded-xl border border-slate-200/60 mt-1">
+                        &quot;{closure.notes}&quot;
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </>
         )}
       </div>
 

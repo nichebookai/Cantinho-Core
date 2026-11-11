@@ -301,105 +301,182 @@ export const PurchasesPage: React.FC = () => {
             Nenhuma compra registrada para os filtros selecionados.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs min-w-[700px]">
-              <thead>
-                <tr className="border-b border-slate-200 text-slate-500">
-                  <th className="pb-3 font-semibold">Código / Data</th>
-                  <th className="pb-3 font-semibold">Fornecedor</th>
-                  <th className="pb-3 font-semibold">Itens Comprados</th>
-                  <th className="pb-3 font-semibold">Forma Pagto</th>
-                  <th className="pb-3 font-semibold text-center">Estoque Atualizado</th>
-                  <th className="pb-3 font-semibold text-center">Status</th>
-                  <th className="pb-3 font-semibold text-right">Valor Total</th>
-                  <th className="pb-3 font-semibold text-right">Ações</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredPurchases.map(pur => (
-                  <tr key={pur.id} className="hover:bg-slate-50/50">
-                    <td className="py-3 font-mono text-slate-600">
-                      <span className="font-bold text-slate-900 block">#{pur.id.slice(-6)}</span>
-                      <span className="text-[11px] text-slate-400">{pur.date}</span>
-                    </td>
-
-                    <td className="py-3 font-semibold text-slate-900">
-                      {pur.supplier}
-                      {pur.invoiceNumber && (
-                        <span className="text-[11px] font-normal text-slate-400 block font-mono">
-                          Doc: {pur.invoiceNumber}
-                        </span>
-                      )}
-                    </td>
-
-                    <td className="py-3 text-slate-700">
-                      <div className="space-y-0.5 text-[11px]">
-                        {pur.items.map((it, idx) => {
-                          const stock = data.stockItems.find(s => s.id === it.stockItemId);
-                          return (
-                            <div key={idx} className="flex items-center gap-1.5">
-                              <span>{it.quantity}x {it.stockItemName}</span>
-                              {stock && (
-                                <span className="text-[10px] bg-slate-100 px-1.5 py-0.2 rounded text-slate-600 font-medium">
-                                  {stock.unit}
-                                </span>
-                              )}
-                              <span className="text-slate-400 font-mono">({formatCurrency(it.unitCost)})</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </td>
-
-                    <td className="py-3 uppercase font-mono text-[11px] text-slate-600">
-                      {pur.paymentMethod}
-                    </td>
-
-                    <td className="py-3 text-center">
-                      <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                        Sim
-                      </span>
-                    </td>
-
-                    <td className="py-3 text-center">
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${
-                          pur.paymentStatus === 'pago'
-                            ? 'text-emerald-800 bg-emerald-50 border-emerald-200'
-                            : 'text-amber-800 bg-amber-50 border-amber-200'
-                        }`}
-                      >
-                        {pur.paymentStatus === 'pago' ? 'Pago' : 'Pendente'}
-                      </span>
-                    </td>
-
-                    <td className="py-3 text-right font-mono font-bold text-slate-900 tabular-nums">
-                      {formatCurrency(pur.totalAmount)}
-                    </td>
-
-                    <td className="py-3 text-right whitespace-nowrap">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          onClick={() => setEditingPurchase(pur)}
-                          className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
-                          title="Editar Compra"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => setPurchaseToDelete(pur)}
-                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                          title="Revogar / Excluir Compra (Estornar Estoque)"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </td>
+          <>
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs min-w-[700px]">
+                <thead>
+                  <tr className="border-b border-slate-200 text-slate-500">
+                    <th className="pb-3 font-semibold">Código / Data</th>
+                    <th className="pb-3 font-semibold">Fornecedor</th>
+                    <th className="pb-3 font-semibold">Itens Comprados</th>
+                    <th className="pb-3 font-semibold">Forma Pagto</th>
+                    <th className="pb-3 font-semibold text-center">Estoque Atualizado</th>
+                    <th className="pb-3 font-semibold text-center">Status</th>
+                    <th className="pb-3 font-semibold text-right">Valor Total</th>
+                    <th className="pb-3 font-semibold text-right">Ações</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredPurchases.map(pur => (
+                    <tr key={pur.id} className="hover:bg-slate-50/50">
+                      <td className="py-3 font-mono text-slate-600">
+                        <span className="font-bold text-slate-900 block">#{pur.id.slice(-6)}</span>
+                        <span className="text-[11px] text-slate-400">{pur.date}</span>
+                      </td>
+
+                      <td className="py-3 font-semibold text-slate-900">
+                        {pur.supplier}
+                        {pur.invoiceNumber && (
+                          <span className="text-[11px] font-normal text-slate-400 block font-mono">
+                            Doc: {pur.invoiceNumber}
+                          </span>
+                        )}
+                      </td>
+
+                      <td className="py-3 text-slate-700">
+                        <div className="space-y-0.5 text-[11px]">
+                          {pur.items.map((it, idx) => {
+                            const stock = data.stockItems.find(s => s.id === it.stockItemId);
+                            return (
+                              <div key={idx} className="flex items-center gap-1.5">
+                                <span>{it.quantity}x {it.stockItemName}</span>
+                                {stock && (
+                                  <span className="text-[10px] bg-slate-100 px-1.5 py-0.2 rounded text-slate-600 font-medium">
+                                    {stock.unit}
+                                  </span>
+                                )}
+                                <span className="text-slate-400 font-mono">({formatCurrency(it.unitCost)})</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </td>
+
+                      <td className="py-3 uppercase font-mono text-[11px] text-slate-600">
+                        {pur.paymentMethod}
+                      </td>
+
+                      <td className="py-3 text-center">
+                        <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                          Sim
+                        </span>
+                      </td>
+
+                      <td className="py-3 text-center">
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${
+                            pur.paymentStatus === 'pago'
+                              ? 'text-emerald-800 bg-emerald-50 border-emerald-200'
+                              : 'text-amber-800 bg-amber-50 border-amber-200'
+                          }`}
+                        >
+                          {pur.paymentStatus === 'pago' ? 'Pago' : 'Pendente'}
+                        </span>
+                      </td>
+
+                      <td className="py-3 text-right font-mono font-bold text-slate-900 tabular-nums">
+                        {formatCurrency(pur.totalAmount)}
+                      </td>
+
+                      <td className="py-3 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => setEditingPurchase(pur)}
+                            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                            title="Editar Compra"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => setPurchaseToDelete(pur)}
+                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                            title="Revogar / Excluir Compra (Estornar Estoque)"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Stacked Cards */}
+            <div className="block md:hidden space-y-3">
+              {filteredPurchases.map(pur => (
+                <div
+                  key={pur.id}
+                  className="bg-slate-50 border border-slate-200/90 rounded-2xl p-3.5 space-y-2.5 shadow-2xs text-xs"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono font-bold text-slate-900 text-sm">#{pur.id.slice(-6)}</span>
+                        <span className="text-[11px] font-mono text-slate-400">· {pur.date}</span>
+                      </div>
+                      <h4 className="font-bold text-slate-900 mt-0.5">{pur.supplier}</h4>
+                      {pur.invoiceNumber && (
+                        <span className="text-[10px] text-slate-500 font-mono block">Doc: {pur.invoiceNumber}</span>
+                      )}
+                    </div>
+
+                    <span
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border whitespace-nowrap ${
+                        pur.paymentStatus === 'pago'
+                          ? 'text-emerald-800 bg-emerald-50 border-emerald-200'
+                          : 'text-amber-800 bg-amber-50 border-amber-200'
+                      }`}
+                    >
+                      {pur.paymentStatus === 'pago' ? 'Pago' : 'Pendente'}
+                    </span>
+                  </div>
+
+                  <div className="bg-white p-2.5 rounded-xl border border-slate-200/80 space-y-1">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Itens Adquiridos</span>
+                    {pur.items.map((it, idx) => {
+                      const stock = data.stockItems.find(s => s.id === it.stockItemId);
+                      return (
+                        <div key={idx} className="flex items-center justify-between text-[11px] text-slate-800">
+                          <span>
+                            {it.quantity}x {it.stockItemName} {stock ? `(${stock.unit})` : ''}
+                          </span>
+                          <span className="font-mono text-slate-500">{formatCurrency(it.unitCost)}/un</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1">
+                    <div>
+                      <span className="text-[10px] font-medium text-slate-500 block">Total ({pur.paymentMethod.toUpperCase()})</span>
+                      <span className="text-base font-extrabold font-mono text-slate-900 tabular-nums">
+                        {formatCurrency(pur.totalAmount)}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setEditingPurchase(pur)}
+                        className="px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-xl font-bold flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                        <span>Editar</span>
+                      </button>
+                      <button
+                        onClick={() => setPurchaseToDelete(pur)}
+                        className="p-2 text-rose-600 bg-white hover:bg-rose-50 border border-rose-200 rounded-xl transition-colors cursor-pointer"
+                        title="Revogar / Excluir"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
 
